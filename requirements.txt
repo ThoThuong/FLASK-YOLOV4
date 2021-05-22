@@ -59,7 +59,7 @@ idna-ssl==1.1.0==pypi_0
 imbalanced-learn==0.7.0==pypi_0
 imblearn==0.0==pypi_0
 importlib-metadata==2.0.0==pypi_0
-importlib_metadata==1.7.0==0
+# importlib_metadata==1.7.0==0
 imutils==0.5.3==pypi_0
 incremental==17.5.0==pypi_0
 intel-openmp==2020.1==216
