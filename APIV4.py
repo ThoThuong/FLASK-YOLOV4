@@ -95,6 +95,7 @@ def image_to_byte_array(image: Image):
 
 def predictOne(img):
     npIMG = np.array(img)
+    print(npIMG.shape)
     # cv2.imshow('test2', npIMG)
     # cv2.waitKey(0)
     print('gamma before correct', np.mean(npIMG, axis=(0, 1)))
@@ -154,6 +155,7 @@ def predictByV4():
     if(len(data) == 1):
         img = request.files["image"].read()
         img = Image.open(io.BytesIO(img))
+
         resultOne = predictOne(img)
         return Response(response=resultOne, status=200)
     if(len(data) > 1):
