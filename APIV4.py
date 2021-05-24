@@ -28,8 +28,8 @@ import Preprocessing_img as pre
 #     ["https://nobugnocode.com", "https://tran-ngoc-thuong-dlex.herokuapp.com"])
 
 app = Flask(__name__)
-# app.config['CORS_HEADERS'] = 'Content-Type'
-# cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+app.config['CORS_HEADERS'] = 'Content-Type'
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
 # ============================
@@ -192,6 +192,11 @@ def test():
 @app.route('/health', methods=['GET'])
 def health():
     return Response(response='api ok')
+
+
+@app.route('/health-post', methods=['POST'])
+def healthpost():
+    return Response(response='post tại sao không dc')
 
 
 @app.route('/api/mul', methods=['POST'])
