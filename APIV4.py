@@ -25,7 +25,7 @@ import Preprocessing_img as pre
 # from tensorflow.compat.v1 import InteractiveSession
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+cors = CORS(app, resources={r"*": {"origins": "*"}})
 
 # ============================
 
