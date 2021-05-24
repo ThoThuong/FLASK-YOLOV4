@@ -24,11 +24,12 @@ import Preprocessing_img as pre
 
 # from tensorflow.compat.v1 import ConfigProto
 # from tensorflow.compat.v1 import InteractiveSession
-cross_origin(
-    ["https://nobugnocode.com", "https://tran-ngoc-thuong-dlex.herokuapp.com"])
+# cross_origin(
+#     ["https://nobugnocode.com", "https://tran-ngoc-thuong-dlex.herokuapp.com"])
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"*": {"origins": "*"}})
+cors = CORS(app, resources={
+            r"*": {"origins": ["https://nobugnocode.com", "https://tran-ngoc-thuong-dlex.herokuapp.com"]}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 # ============================
