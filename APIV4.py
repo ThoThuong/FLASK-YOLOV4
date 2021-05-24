@@ -29,8 +29,7 @@ import Preprocessing_img as pre
 
 app = Flask(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
-cors = CORS(app, resources={
-            r"*": {"origins": ["https://nobugnocode.com", "https://tran-ngoc-thuong-dlex.herokuapp.com"]}})
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
 # ============================
