@@ -154,7 +154,7 @@ def predictOne(img):
         return final_new_data
 
 
-@app.route('/api/test', methods=['POST'])
+@app.route('/api/predict', methods=['POST'])
 def predictByV4():
     data = request.files
     if(len(data) == 1):
