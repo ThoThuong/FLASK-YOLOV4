@@ -9,28 +9,18 @@ from flask import Flask, request, Response
 from flask_cors import cross_origin
 import numpy as np
 import cv2
-from PIL import Image
+from PIL import Image, ImageOps, ExifTags
+from PIL.ExifTags import TAGS
 from tensorflow.python.saved_model import tag_constants
-from forV4.core.yolov4 import filter_boxes
 import forV4.core.utils as utils
 from absl.flags import FLAGS
 from absl import app, flags, logging
 import tensorflow as tf
 import Preprocessing_img as pre
-# from OpenSSL import SSL
-# context = SSL.Context(SSL.TLSv1_2_METHOD)
-# context.use_certificate('cert.pem')
-# context.use_privatekey('key.pem')
-
-# from tensorflow.compat.v1 import ConfigProto
-# from tensorflow.compat.v1 import InteractiveSession
-# cross_origin(
-#     ["https://nobugnocode.com", "https://tran-ngoc-thuong-dlex.herokuapp.com"])
 
 app = Flask(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
-
 
 # ============================
 
@@ -100,6 +90,7 @@ def image_to_byte_array(image: Image):
 
 def predictOne(img):
     npIMG = np.array(img)
+
     print(npIMG.shape)
     # cv2.imshow('test2', npIMG)
     # cv2.waitKey(0)
@@ -133,8 +124,8 @@ def predictOne(img):
                     endY = int(ObjTarget[label]['endy'])
                 print('-----------------------', startX, endX, startY, endY)
                 image = imageToCrop[
-                    startY:endY, startX:endX
-                ]
+                        startY:endY, startX:endX
+                        ]
                 image = pre.img_to_binary(image)
 
                 image = Image.fromarray(image)
@@ -157,13 +148,17 @@ def predictOne(img):
 @app.route('/api/predict', methods=['POST'])
 def predictByV4():
     data = request.files
-    if(len(data) == 1):
+    if (len(data) == 1):
         img = request.files["image"].read()
         img = Image.open(io.BytesIO(img))
+        exif_key = {v: k for k, v in ExifTags.TAGS.items()}['Orientation']
+        exif = img.getexif()
 
+        if exif_key in exif.keys():
+            img=pre.by_pass_exif_orientation(img,exif[exif_key])
         resultOne = predictOne(img)
         return Response(response=resultOne, status=200)
-    if(len(data) > 1):
+    if (len(data) > 1):
         data = data.to_dict()
         data = data.values()
         imgs = list(data)
@@ -202,7 +197,7 @@ def healthpost():
 @app.route('/api/mul', methods=['POST'])
 def mul():
     img = len(request.files)
-    if(img > 1):
+    if (img > 1):
         a = request.files.to_dict()
         print(list(a.values())[0])
         return Response(response=json.dumps({'mess': 'xu ly nhieuf'}))
