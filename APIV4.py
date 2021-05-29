@@ -90,7 +90,7 @@ def image_to_byte_array(image: Image):
 
 def predictOne(img):
     npIMG = np.array(img)
-    npIMG = pre.text_filter(npIMG)
+    npIMG = pre.canny(npIMG)
     print(npIMG.shape)
     # cv2.imshow('test2', npIMG)
     # cv2.waitKey(0)
