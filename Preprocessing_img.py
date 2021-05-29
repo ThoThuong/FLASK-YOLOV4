@@ -74,6 +74,15 @@ def img_to_binary(img, max_size=1500):
     return bw_img
 
 
+def text_filter(img):
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    canny = cv2.Canny(img_gray, 100, 200)
+    inv_gray = cv2.bitwise_not(img_gray)
+    sub_img = cv2.bitwise_not(cv2.multiply(cv2.subtract(img_gray, canny), 2.5))
+    result = cv2.bitwise_not(cv2.add(sub_img, inv_gray))
+    return result
+
+
 def gamma_correction(img, gamma=0.7):
     invGamma = 1.0 / gamma
     table = np.array([((i / 255.0) ** invGamma) *
