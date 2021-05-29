@@ -191,7 +191,8 @@ def predictByV4():
 
 @app.route('/', methods=['GET'])
 def test():
-    return Response(response='ok https')
+    print('testing connection: ok')
+    return Response(response='testing connection: ok')
 
 
 @app.route('/health', methods=['GET'])
