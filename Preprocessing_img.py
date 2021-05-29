@@ -148,14 +148,14 @@ def cal_thresh(img_org):
 
     sharpen_kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
     img_sharpen = cv2.filter2D(img_blur, -1, sharpen_kernel)
-    cv2.imshow('img_sharpen', resize_perten(img_sharpen, 2))
+    # cv2.imshow('img_sharpen', resize_perten(img_sharpen, 2))
 
     img_sharpen_bounding=cal_erode(cv2.subtract(img_sharpen,cal_canny(img_gray)),1)
     img_sharpen_bounding = cal_dilate(cv2.subtract(img_sharpen_bounding, cal_canny(img_gray)), 1)
-    cv2.imshow('img_sharpen_bounding', resize_perten(img_sharpen_bounding, 2))
+    # cv2.imshow('img_sharpen_bounding', resize_perten(img_sharpen_bounding, 2))
 
     sub_img2 = cv2.multiply(cv2.subtract(img_sharpen_bounding, canny), 1.1)
-    cv2.imshow('sub_img2', resize_perten(sub_img2, 2))
+    # cv2.imshow('sub_img2', resize_perten(sub_img2, 2))
 
     add_img = cv2.add(sub_img2, 0)
     thresh_img = thresholding(add_img)
@@ -173,12 +173,12 @@ def cal_low_brightness(img_org, thresh_img):
 
 
 def text_filter(img):
-    img=resize_with_max(img)
+    # img=resize_with_max(img)
     thresh_img = cal_thresh(img)
     low_brightness_img=cal_low_brightness(img,thresh_img)
     result = cv2.subtract(low_brightness_img, thresh_img)
     result = thresholding(result)
-    return result
+    return cv2.bitwise_not(result)
 
 def text_filter_canny(img):
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
