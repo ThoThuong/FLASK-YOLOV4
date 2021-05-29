@@ -147,26 +147,36 @@ def predictOne(img):
 
 @app.route('/api/predict', methods=['POST'])
 def predictByV4():
-    data = request.files
+    data = json.loads(request.form['img'])['img']
     if (len(data) == 1):
-        img = request.files["image"].read()
-        img = Image.open(io.BytesIO(img))
+        base64_form = data[0]
+        base64_data = base64_form.split('base64,')[1]
+        byte_img = io.BytesIO(base64.b64decode(base64_data))
+        # img = request.files["image"].read()
+        img = Image.open(byte_img)
         exif_key = {v: k for k, v in ExifTags.TAGS.items()}['Orientation']
         exif = img.getexif()
 
         if exif_key in exif.keys():
-            img=pre.by_pass_exif_orientation(img,exif[exif_key])
+            img = pre.by_pass_exif_orientation(img, exif[exif_key])
         resultOne = predictOne(img)
         return Response(response=resultOne, status=200)
     if (len(data) > 1):
-        data = data.to_dict()
-        data = data.values()
-        imgs = list(data)
+        # base64_form = data[0]
+        # base64_data = base64_form.split('base64,')[1]
+        # byte_img = io.BytesIO(base64.b64decode(base64_data))
+
+        # data = data.to_dict()
+        # data = data.values()
+        # imgs = list(data)
         listResultMul = list()
         listItem = list()
-        for img in imgs:
-            img = img.read()
-            img = Image.open(io.BytesIO(img))
+        for img in data:
+            base64_form = img
+            base64_data = base64_form.split('base64,')[1]
+            byte_img = io.BytesIO(base64.b64decode(base64_data))
+            # img = request.files["image"].read()
+            img = Image.open(byte_img)
             rsult = predictOne(img)
             ok = json.loads(rsult)
             for item in ok['files']:
