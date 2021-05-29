@@ -126,7 +126,7 @@ def predictOne(img):
                 image = imageToCrop[
                         startY:endY, startX:endX
                         ]
-                image = pre.img_to_binary(image)
+                # image = pre.img_to_binary(image)
 
                 image = Image.fromarray(image)
                 image = image_to_byte_array(image)
