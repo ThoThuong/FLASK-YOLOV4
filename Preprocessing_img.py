@@ -74,23 +74,6 @@ def img_to_binary(img, max_size=1500):
     return bw_img
 
 
-def text_filter(img):
-    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    canny = cv2.Canny(img_gray, 100, 200)
-    inv_gray = cv2.bitwise_not(img_gray)
-    sub_img = cv2.bitwise_not(cv2.multiply(cv2.subtract(img_gray, canny), 2.5))
-    addition_img = cv2.bitwise_not(cv2.add(sub_img, inv_gray))
-    contras_img = cv2.multiply(addition_img, 1.3)
-    result = cv2.subtract(contras_img, canny)
-    return result
-
-def text_filter_canny(img):
-    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    canny = cv2.Canny(img_gray, 100, 200)
-    inv_canny = cv2.bitwise_not(canny)
-
-    return inv_canny
-
 def gamma_correction(img, gamma=0.7):
     invGamma = 1.0 / gamma
     table = np.array([((i / 255.0) ** invGamma) *
@@ -114,15 +97,15 @@ def thresholding(image):
 
 
 # dilation
-def dilate(image):
+def cal_dilate(image, iterations):
     kernel = np.ones((5, 5), np.uint8)
-    return cv2.dilate(image, kernel, iterations=1)
+    return cv2.dilate(image, kernel, iterations=iterations)
 
 
 # erosion
-def erode(image):
+def cal_erode(image, iterations):
     kernel = np.ones((5, 5), np.uint8)
-    return cv2.erode(image, kernel, iterations=1)
+    return cv2.erode(image, kernel, iterations=iterations)
 
 
 # opening - erosion followed by dilation
@@ -132,7 +115,7 @@ def opening(image):
 
 
 # canny edge detection
-def canny(image):
+def cal_canny(image):
     return cv2.Canny(image, 100, 200)
 
 
@@ -155,3 +138,51 @@ def deskew(image):
 # template matching
 def match_template(image, template):
     return cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED)
+
+
+def cal_thresh(img_org):
+    img_gray = cv2.cvtColor(img_org, cv2.COLOR_BGR2GRAY)
+    canny = cal_canny(img_gray)
+    # cv2.imshow('canny', resize_perten(canny, 2))
+    img_blur = cv2.medianBlur(img_gray, 5)
+
+    sharpen_kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
+    img_sharpen = cv2.filter2D(img_blur, -1, sharpen_kernel)
+    cv2.imshow('img_sharpen', resize_perten(img_sharpen, 2))
+
+    img_sharpen_bounding=cal_erode(cv2.subtract(img_sharpen,cal_canny(img_gray)),1)
+    img_sharpen_bounding = cal_dilate(cv2.subtract(img_sharpen_bounding, cal_canny(img_gray)), 1)
+    cv2.imshow('img_sharpen_bounding', resize_perten(img_sharpen_bounding, 2))
+
+    sub_img2 = cv2.multiply(cv2.subtract(img_sharpen_bounding, canny), 1.1)
+    cv2.imshow('sub_img2', resize_perten(sub_img2, 2))
+
+    add_img = cv2.add(sub_img2, 0)
+    thresh_img = thresholding(add_img)
+    return thresh_img
+
+
+def cal_low_brightness(img_org, thresh_img):
+    img_gray = cv2.cvtColor(img_org, cv2.COLOR_BGR2GRAY)
+    canny = cal_canny(img_gray)
+    dilate = cal_dilate(thresh_img, 7)
+    dilate = cal_erode(dilate, 20)
+    negative_sub2 = cv2.multiply(cv2.subtract(img_gray, canny), 2)
+    add_img_cann2 = cv2.bitwise_not(cv2.subtract(negative_sub2, dilate))
+    return add_img_cann2
+
+
+def text_filter(img):
+    img=resize_with_max(img)
+    thresh_img = cal_thresh(img)
+    low_brightness_img=cal_low_brightness(img,thresh_img)
+    result = cv2.subtract(low_brightness_img, thresh_img)
+    result = thresholding(result)
+    return result
+
+def text_filter_canny(img):
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    canny = cv2.Canny(img_gray, 100, 200)
+    inv_canny = cv2.bitwise_not(canny)
+
+    return inv_canny
