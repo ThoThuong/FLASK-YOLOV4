@@ -126,7 +126,7 @@ def predictOne(img):
                 image = imageToCrop[
                         startY:endY, startX:endX
                         ]
-                image = pre.text_filter_canny(image)
+                image = pre.text_filter(image)
 
                 image = Image.fromarray(image)
                 image = image_to_byte_array(image)
