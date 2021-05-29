@@ -147,6 +147,7 @@ def predictOne(img):
 
 @app.route('/api/predict', methods=['POST'])
 def predictByV4():
+    print('recieve a request')
     data = json.loads(request.form['img'])['img']
     if (len(data) == 1):
         base64_form = data[0]
