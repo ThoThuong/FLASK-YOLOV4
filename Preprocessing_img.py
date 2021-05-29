@@ -79,9 +79,17 @@ def text_filter(img):
     canny = cv2.Canny(img_gray, 100, 200)
     inv_gray = cv2.bitwise_not(img_gray)
     sub_img = cv2.bitwise_not(cv2.multiply(cv2.subtract(img_gray, canny), 2.5))
-    result = cv2.bitwise_not(cv2.add(sub_img, inv_gray))
+    addition_img = cv2.bitwise_not(cv2.add(sub_img, inv_gray))
+    contras_img = cv2.multiply(addition_img, 1.3)
+    result = cv2.subtract(contras_img, canny)
     return result
 
+def text_filter_canny(img):
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    canny = cv2.Canny(img_gray, 100, 200)
+    inv_canny = cv2.bitwise_not(canny)
+
+    return inv_canny
 
 def gamma_correction(img, gamma=0.7):
     invGamma = 1.0 / gamma
