@@ -17,7 +17,7 @@ from absl.flags import FLAGS
 from absl import app, flags, logging
 import tensorflow as tf
 import Preprocessing_img as pre
-
+import time
 app = Flask(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -89,14 +89,15 @@ def image_to_byte_array(image: Image):
 
 
 def predictOne(img):
+    start_time = time.time()
     npIMG = np.array(img)
 
     print(npIMG.shape)
     # cv2.imshow('test2', npIMG)
     # cv2.waitKey(0)
-    print('gamma before correct', np.mean(npIMG, axis=(0, 1)))
+    # print('gamma before correct', np.mean(npIMG, axis=(0, 1)))
     npIMG = pre.gamma_correction(npIMG, gamma=1.2)
-    print('gamma after correct', np.mean(npIMG, axis=(0, 1)))
+    # print('gamma after correct', np.mean(npIMG, axis=(0, 1)))
 
     imageToCrop = npIMG
     FRsult = list()
@@ -107,12 +108,12 @@ def predictOne(img):
             label = list(thisKey)[0]
             score = list(thisKey)[1]
             if (ObjTarget[score] > 0.4):
-                print('asdasdasd', label)
+                # print('asdasdasd', label)
                 startX = 0
                 endX = 0
                 startY = 0
                 endY = 0
-                print('adasdsadasdasd', label)
+                # print('adasdsadasdasd', label)
                 if (ObjTarget[label]['startx'] >= 0):
                     startX = int(ObjTarget[label]['startx'])
                 if (ObjTarget[label]['endx'] >= 0):
@@ -122,12 +123,12 @@ def predictOne(img):
                     startY = int(ObjTarget[label]['starty'])
                 if (ObjTarget[label]['endy'] >= 0):
                     endY = int(ObjTarget[label]['endy'])
-                print('-----------------------', startX, endX, startY, endY)
+                # print('-----------------------', startX, endX, startY, endY)
                 image = imageToCrop[
                         startY:endY, startX:endX
                         ]
                 image = pre.text_filter(image)
-
+                pro_time=time.time()
                 image = Image.fromarray(image)
                 image = image_to_byte_array(image)
                 image = base64.b64encode(image).decode()
@@ -135,6 +136,8 @@ def predictOne(img):
                     label: image
                 })
         result = Image.fromarray(result)
+
+
         result = image_to_byte_array(result)
         FRsult.append({
             'imgWithBox': base64.b64encode(result).decode()
@@ -142,6 +145,8 @@ def predictOne(img):
         final_new_data = json.dumps(
             {'files': FRsult}, sort_keys=True, indent=4, separators=(',', ': ')
         )
+        model_time = time.time()
+        print("model time--- %s seconds ---" % (model_time - start_time))
         return final_new_data
 
 
@@ -211,7 +216,7 @@ def mul():
     img = len(request.files)
     if (img > 1):
         a = request.files.to_dict()
-        print(list(a.values())[0])
+        # print(list(a.values())[0])
         return Response(response=json.dumps({'mess': 'xu ly nhieuf'}))
     return Response(response=json.dumps({'mess': 'xu ly mot'}))
 

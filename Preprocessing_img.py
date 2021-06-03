@@ -143,16 +143,17 @@ def match_template(image, template):
 def cal_thresh(img_org):
     img_gray = cv2.cvtColor(img_org, cv2.COLOR_BGR2GRAY)
     canny = cal_canny(img_gray)
-    # cv2.imshow('canny', resize_perten(canny, 2))
+    # cv2.imshow('canny', resize_perten(canny, 5))
     img_blur = cv2.medianBlur(img_gray, 5)
 
     sharpen_kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
     img_sharpen = cv2.filter2D(img_blur, -1, sharpen_kernel)
     # cv2.imshow('img_sharpen', resize_perten(img_sharpen, 2))
 
-    img_sharpen_bounding=cal_erode(cv2.subtract(img_sharpen,cal_canny(img_gray)),1)
+    img_sharpen_bounding = cal_erode(cv2.subtract(img_sharpen, cal_canny(img_gray)), 1)
     img_sharpen_bounding = cal_dilate(cv2.subtract(img_sharpen_bounding, cal_canny(img_gray)), 1)
-    # cv2.imshow('img_sharpen_bounding', resize_perten(img_sharpen_bounding, 2))
+
+    # cv2.imshow('img_sharpen_bounding', resize_perten(img_sharpen_bounding, 5))
 
     sub_img2 = cv2.multiply(cv2.subtract(img_sharpen_bounding, canny), 1.1)
     # cv2.imshow('sub_img2', resize_perten(sub_img2, 2))
